@@ -88,6 +88,10 @@ def async_import_delivery_statistics(
             name=f"{tank_name} Delivered Spend",
             source=DOMAIN,
             statistic_id=f"{prefix}_delivered_spend",
+            # USD has no HA unit converter, so unit_class is None. Setting it
+            # explicitly satisfies the requirement (HA 2026.11) that external
+            # statistics declare unit_class; omitting it now only warns.
+            unit_class=None,
             unit_of_measurement="USD",
         ),
         spend,
@@ -100,6 +104,9 @@ def async_import_delivery_statistics(
             name=f"{tank_name} Delivered Gallons",
             source=DOMAIN,
             statistic_id=f"{prefix}_delivered_gallons",
+            # Gallons belong to HA's "volume" converter class (gal is a valid
+            # unit), enabling unit conversion/display in the statistics UI.
+            unit_class="volume",
             unit_of_measurement="gal",
         ),
         gallons,
@@ -113,6 +120,8 @@ def async_import_delivery_statistics(
                 name=f"{tank_name} Delivered Price",
                 source=DOMAIN,
                 statistic_id=f"{prefix}_delivered_price",
+                # USD/gal has no converter -> unit_class None (see Delivered Spend).
+                unit_class=None,
                 unit_of_measurement="USD/gal",
             ),
             price,
@@ -199,6 +208,8 @@ def async_import_estimated_consumption(
             name=f"{tank_name} Estimated Consumption",
             source=DOMAIN,
             statistic_id=consumption_id,
+            # ft³ is a "volume" unit (valid in HA's volume converter).
+            unit_class="volume",
             unit_of_measurement="ft³",
         ),
         consumption,
@@ -211,6 +222,8 @@ def async_import_estimated_consumption(
             name=f"{tank_name} Estimated Cost",
             source=DOMAIN,
             statistic_id=cost_id,
+            # USD has no converter -> unit_class None (see Delivered Spend).
+            unit_class=None,
             unit_of_measurement="USD",
         ),
         cost,
